@@ -1,0 +1,45 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Guest {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  email     String   @unique
+  phone     String?
+  hasCar    Boolean  @default(false)
+  isDriver  Boolean  @default(false)
+  rsvp      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    Event[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  date        DateTime
+  location    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Admin       Admin?   @relation(fields: [adminId], references: [id])
+  adminId     String?
+  guests      Guest[]
+}
